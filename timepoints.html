@@ -1,0 +1,121 @@
+
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>chart</title>  
+</head> 
+
+<style>
+.axis path,
+		.axis line{
+		fill: none;
+		stroke: black;
+		shape-rendering: crispEdges;
+	}
+  .line{
+    fill: none;
+    stroke: blue;
+    stroke-width: 1.5px;
+  }
+
+  .tick text{
+    font-size: 12px;
+  }
+
+  .tick line{
+    opacity: 0.2;
+  }
+
+</style>
+
+<body>  
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+	<script>
+
+	//画布大小
+	var width = 1000;
+	var height = 500;
+
+	//在 body 里添加一个 SVG 画布	
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+	//画布周边的空白
+	var padding = {left:30, right:30, top:20, bottom:20};
+	var xlang = width - padding.left - padding.right;
+	var ylang = height - padding.top - padding.bottom;
+
+	//定义一个数组
+	var dataset = [ [ 1457366400000, 72, 0 ],
+  [ 1457452800000, 84, 1 ],
+  [ 1457539200000, 108, 2 ],
+  [ 1457625600000, 102, 3 ],
+  [ 1457712000000, 112, 4 ],
+  [ 1457937889023, 112, 5 ],
+  [ 1457967600000, null, 6 ],
+  [ 1458054000000, null, 7 ],
+  [ 1458140400000, null, 8 ],
+  [ 1458226800000, null, 9 ],
+  [ 1458313200000, null, 10 ],
+  [ 1458486000000, null, 11 ] ];
+  
+  var linedata = dataset.filter(function(d){return d[1] != null;})
+  console.log(Math.round(new Date() / 1000));
+	console.log(linedata);
+	//x轴的比例尺
+	var xScale = d3.time.scale.utc()
+		.domain(d3.extent(dataset, function(d){return d[0];}))
+		.range([0, xlang]);
+
+	//y轴的比例尺
+	var yScale = d3.scale.linear()
+		.domain([0, d3.max(dataset, function(d){ return d[1];})])
+		.range([ylang, 0]);
+
+	//定义x轴
+	var xAxis = d3.svg.axis()
+	  .innerTickSize(-ylang)
+    .outerTickSize(0)
+		.scale(xScale)
+		.tickFormat(d3.time.format.utc('%b,%d'))
+		.orient("bottom");
+		
+	//定义y轴
+	var yAxis = d3.svg.axis()
+	  .innerTickSize(-xlang)
+    .outerTickSize(0)
+		.scale(yScale)
+		.tickPadding(0)
+		.orient("left");
+		
+	 var line = d3.svg.line()
+     .x(function(d){return xScale(d[0]);})
+     .y(function(d){return yScale(d[1]);});
+     
+    var s = svg.append("g")
+        .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
+
+
+	//添加x轴
+	s.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + ylang + ")")
+        .call(xAxis);
+
+	//添加y轴
+	s.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+		
+	s.append("path")
+        .data([linedata])
+        .attr("class", "line")
+        .attr("d", line);
+
+
+</script>  
+</body>  
+</html>  
